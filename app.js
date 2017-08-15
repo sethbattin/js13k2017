@@ -1,46 +1,32 @@
-import * as nodeanimate from "nodeanimate";
-import { boxInput, camMoveController, gamepadThing } from "./appInput";
+import { Camera, create2d , Debug, Clear} from "nodeanimate";
+import { camMoveController } from "./appInput";
 
-//var container = document.getElementById('container');
+
 var WIDTH = 720;
 var HEIGHT = 405;
 
-var loop = nodeanimate.create2d({container: container, height:HEIGHT, width: WIDTH});
+var loop = create2d({container: container, height:HEIGHT, width: WIDTH});
+
+loop.add(new Clear());
 
 loop.add({
-  count: 0,
-  position: {x: 1, y: 1},
-  update: function(context){
-    this.position.x += boxInput.x();
-    this.position.y += boxInput.y();
+  p: {x: 0, y: 0},
+  stuck: true,
+  size: 10,
+  update: function(context, delta, time){
 
-    if (this.position.x < WIDTH / -2) { this.position.x = WIDTH / 2; }
-    if (this.position.y < HEIGHT / -2) { this.position.y = HEIGHT / 2; }
-    if (this.position.x > WIDTH / 2) { this.position.x = WIDTH / -2; }
-    if (this.position.y > HEIGHT / 2) { this.position.y = HEIGHT / -2; }
   },
-  draw: function(context){
-    context.save();
-    context.setTransform(1,0,0,1,0,0);
-    context.fillStyle = "cornflowerblue";
-    context.fillRect(0, 0, WIDTH, HEIGHT);
-    cam.setTransform(context);
-    context.translate(this.position.x, this.position.y);
-    context.fillStyle = "red";
-    context.fillRect(-5, -5, 10, 10);
-    context.restore();
+  draw: function(context, delta, time){
+    context.fillStyle = "black";
+    context.fillRect(this.p.x - this.size / 2, this.p.y - this.size / 2, this.size, this.size);
   }
 });
 
-var cam = window.cam = new nodeanimate.Camera.default();
-cam.controller = new nodeanimate.Camera.LerpController();
+var cam = window.cam = new Camera.default();
+cam.controller = new Camera.LerpController();
 cam.controller.controller = camMoveController;
 loop.add(cam);
 loop.add(camMoveController);
 
-window.gp = gamepadThing;
-
-loop.add(gamepadThing);
-
-loop.add(new nodeanimate.Debug(cam));
+loop.add(new Debug(cam));
 
